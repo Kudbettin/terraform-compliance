@@ -1,4 +1,5 @@
 from terraform_compliance.common.defaults import Defaults
+from terraform_compliance.common.helper import Match
 
 
 def look_for_bdd_tags(_step_obj):
@@ -14,5 +15,9 @@ def look_for_bdd_tags(_step_obj):
                 _step_obj.context.failure_class = tag.name
             elif tag.name.lower() in Defaults().case_sensitive_tags:
                 _step_obj.context.case_insensitivity = False
+
+    ## set the match here
+    case_sensitive = True if hasattr(_step_obj.context, 'case_insensitivity') and not _step_obj.context.case_insensitivity else False
+    _step_obj.context.match = Match(case_sensitive=case_sensitive)
 
     return _step_obj
