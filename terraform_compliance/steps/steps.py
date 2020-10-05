@@ -47,6 +47,7 @@ from terraform_compliance.steps.then.its_key_condition_be_value import its_key_c
 from terraform_compliance.steps.then.interpolations import i_flatten_everything_found
 from terraform_compliance.steps.then.it_must_be_in import it_must_be_in
 from terraform_compliance.steps.then.its_value_condition_be_null import its_value_condition_be_null
+from terraform_compliance.steps.then.inline_python import inline_python
 
 @given(u'I have {name:ANY} defined')
 @given(u'I have {name:ANY} {type_name:SECTION} configured')
@@ -216,12 +217,20 @@ def wrapper(_step_obj, key, condition, value, stash=Null, depth=0):
 def wrapper(_step_obj):
     return i_flatten_everything_found(_step_obj)
 
+
 @then('it must be a subset of {haystack:ANY}')
 @then('it must be in {haystack:ANY}')
 def wrapper(_step_obj, haystack):
     return it_must_be_in(_step_obj, haystack)
 
+
 @then('it must be a superset of {haystack:ANY}')
 @then('it must cover {haystack:ANY}')
 def wrapper(_step_obj, haystack):
     return it_must_be_in(_step_obj, haystack, cover=True)
+
+
+# it must pass python test {var} {var}
+@then('python {file_name:ANY} {function_name:ANY}')
+def wrapper(_step_obj, file_name, function_name):
+    return inline_python(_step_obj, file_name, function_name)
