@@ -1,6 +1,7 @@
 # CHANGELOG
 
 ## Unreleased
+* Fixed a problem where [When its property has something](https://terraform-compliance.com/pages/bdd-references/when.html#when-its-property-has-something) ignored `None` values. ([#401](https://github.com/eerkunt/terraform-compliance/issues/401))
 * Fixed an issue where some found values were not recorded on [Then it must contain something](https://terraform-compliance.com/pages/bdd-references/then.html#then-it-must-contain-something). ([#400]((https://github.com/eerkunt/terraform-compliance/issues/400)))
 
 ## 1.3.5 (2020-10-14)
