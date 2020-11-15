@@ -1,5 +1,5 @@
 import json
-from terraform_compliance.common.helper import seek_key_in_dict, flatten_list, dict_merge, Match
+from terraform_compliance.common.helper import seek_key_in_dict, flatten_list, dict_merge, Match, set_all_values, merge_dicts
 import sys
 from copy import deepcopy
 from terraform_compliance.common.defaults import Defaults
@@ -131,7 +131,22 @@ class TerraformParser(object):
             change = resource.get('change', {})
             actions = change.get('actions', [])
             if actions != ['delete']:
+                # resource['values'] = dict_merge(change.get('after', {}), change.get('after_unknown', {}))
+                # resource['values'] = change.get('after', {})
+                '''
+                after_unknown = change.get('after_unknown', {})
+                after_unknown = set_all_values(after_unknown, 'known after apply')
+                # after you're done also fix this (they should merge into a single dictionary instead of separate)
                 resource['values'] = dict_merge(change.get('after', {}), change.get('after_unknown', {}))
+                # e.g.
+                resource['values'] = {**second, **first} (kills multivals, maybe account for multivals too)
+                '''
+                after_unknown = change.get('after_unknown', {})
+                set_all_values(after_unknown, 'known after apply')
+                # resource['values'] = dict_merge(change.get('after', {}), after_unknown)
+                resource['values'] = change.get('after', {})
+                merge_dicts(resource['values'], after_unknown)
+
                 if 'change' in resource:
                     del resource['change']
 
@@ -252,7 +267,7 @@ class TerraformParser(object):
                     if Defaults.r_mount_addr_ptr_list not in self.resources[target_resource]:
                         self.resources[target_resource][Defaults.r_mount_addr_ptr_list] = []
 
-                    if ref_type not in self.resources[target_resource]['values']:
+                    if ref_type not in self.resources[target_resource]['values'] or self.resources[target_resource]['values'][ref_type] == 'known after apply':
                         self.resources[target_resource]['values'][ref_type] = []
 
                     self.resources[target_resource]['values'][ref_type].append(resource)

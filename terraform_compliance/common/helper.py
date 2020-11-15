@@ -474,6 +474,111 @@ def seek_value_in_dict(needle, haystack, address=None):
     return findings
 
 
+def set_all_values(source, value):
+    ''' 
+    should be only called with a dict
+    
+    sets singular values to value
+    
+    idk what to do with other stuff yet
+
+    '''
+    if isinstance(source, list):
+        for i, v in enumerate(source):
+            if isinstance(v, (list, dict)):
+                set_all_values(v, value)
+            else:
+                source[i] = value
+
+    if isinstance(source, dict):
+        for key, v in source.items():
+            if isinstance(v, (list, dict)):
+                set_all_values(v, value)
+            else:
+                source[key] = value
+
+
+    
+
+def merge_dicts(source, target):
+    '''
+    successor of dict_merge
+    merges two dictionaries or lists into one
+    overlapping list/dictionaries are also merged within each other
+
+    if isinstance(source, list) and isinstance(target, list):
+        # shady, just extend?
+        for i, v in enumerate(higher prio):
+            if v is dict
+                if lower has dict in the ith element
+                    combine them
+
+
+    if isinstance(source, dict) and isinstance(target, dict):
+        if all elements are singular
+            return {**target, **source}
+
+        merged = {**target, **source} # source has priority over conflicts
+
+        # find conflicting lists
+        for all conflicting lists,
+            # merged[key] = source[key] + target[key] # honestly depends on the situation
+            merged[key] = merge_dicts(source[key], target[key])
+        
+        for all conflicting lists
+            merged[key] = merge_dicts(source[key], target[key])
+
+
+
+
+    decisions to make
+        what happens to conflicting lists?
+            should I drop one and keep the other (could be relevant on some cases)
+            should I merge the lists? (could be relevant as well)
+        
+        what happens to conflicting dirs?
+
+
+    if I have two lists
+        lists have dictionaries in the same index
+            merge those dictionaries
+    
+        # add remaining values of lower priority to higher priority 
+        ignore non dict values
+    
+
+    conflicts
+        regular values: higher prio overrides
+        dictionaries: merge conflicting dictionaries
+        lists: higher prio overrides, merge any matching dictionary elements
+    
+    assume target is low priority
+
+    '''
+    if isinstance(source, list) and isinstance(target, list):
+        for i, value in enumerate(target):
+            if isinstance(value, dict) and isinstance(source[i], dict): # what if i not in source?
+                merge_dicts(source[i], target[i])
+            elif isinstance(value, list) and isinstance(source[i], list):
+                merge_dicts(source[i], target[i])
+
+    if isinstance(source, dict) and isinstance(target, dict):
+        for key, value in target.items():
+            if key not in source:
+                source[key] = target[key]
+            else:
+                # regular values
+                # do nothing
+
+                # dictionaries
+                if isinstance(value, dict) and isinstance(source[key], dict):
+                    merge_dicts(source[key], target[key])
+                elif isinstance(value, list) and isinstance(source[key], list):
+                    merge_dicts(source[key], target[key])
+
+
+    pass
+
 def dict_merge(source, target):
     if not isinstance(source, dict) or not isinstance(target, dict):
         return source
